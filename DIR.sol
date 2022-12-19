@@ -49,7 +49,7 @@ contract DexingMining is IERC20, Ownable {
     uint256[] private _whaleLevel = [200, 150, 100, 50, 25];
 
     address private _marketWallet = 0x542b06E77DA9c3A16BED909aFa3B9188DBd1D7C6;
-    address private _equidityWallet = 0xEe4Dd69979406a3035204752868CB47F4A2C3FD9;
+    address private _equidityWallet = 0x05B13c280e563422202602226661f73f0F95D9ED;
     address private _devWallet = 0x84361F0e0fC4B4eA94B137dB7EF69537a19aCb69;
     address private _burnWallet = 0x000000000000000000000000000000000000dEaD;
 
