@@ -1,13 +1,13 @@
-// 8888888b.  8888888888 Y88b   d88P 8888888 888b    888  .d8888b.       888b     d888 8888888 888b    888 8888888888 8888888b.  
-// 888  "Y88b 888         Y88b d88P    888   8888b   888 d88P  Y88b      8888b   d8888   888   8888b   888 888        888   Y88b 
-// 888    888 888          Y88o88P     888   88888b  888 888    888      88888b.d88888   888   88888b  888 888        888    888 
-// 888    888 8888888       Y888P      888   888Y88b 888 888             888Y88888P888   888   888Y88b 888 8888888    888   d88P 
-// 888    888 888           d888b      888   888 Y88b888 888  88888      888 Y888P 888   888   888 Y88b888 888        8888888P"  
-// 888    888 888          d88888b     888   888  Y88888 888    888      888  Y8P  888   888   888  Y88888 888        888 T88b   
-// 888  .d88P 888         d88P Y88b    888   888   Y8888 Y88b  d88P      888   "   888   888   888   Y8888 888        888  T88b  
-// 8888888P"  8888888888 d88P   Y88b 8888888 888    Y888  "Y8888P88      888       888 8888888 888    Y888 8888888888 888   T88b       
 
 // SPDX-License-Identifier: MIT
+
+// .______     ______     ______  __  ___  _______ .___________.     ______  __    __       ___      .__   __.   _______  _______ 
+// |   _  \   /  __  \   /      ||  |/  / |   ____||           |    /      ||  |  |  |     /   \     |  \ |  |  /  _____||   ____|
+// |  |_)  | |  |  |  | |  ,----'|  '  /  |  |__   `---|  |----`   |  ,----'|  |__|  |    /  ^  \    |   \|  | |  |  __  |  |__   
+// |   ___/  |  |  |  | |  |     |    <   |   __|      |  |        |  |     |   __   |   /  /_\  \   |  . `  | |  | |_ | |   __|  
+// |  |      |  `--'  | |  `----.|  .  \  |  |____     |  |        |  `----.|  |  |  |  /  _____  \  |  |\   | |  |__| | |  |____ 
+// | _|       \______/   \______||__|\__\ |_______|    |__|         \______||__|  |__| /__/     \__\ |__| \__|  \______| |_______|                                                                                                                             
+
 
 pragma solidity 0.8.16;
 
@@ -170,7 +170,7 @@ struct Depo {
     uint256 key;
     uint256 depoTime;
     uint256 amt;
-    address ref;
+    address reffy;
     bool initialWithdrawn;
 }
 struct Main {
@@ -187,55 +187,55 @@ struct FeesPercs{
     uint256 daysInSeconds;
     uint256 feePercentage;
 }
-contract FTMGrowGarden {
+contract PocketChange {
     using SafeMath for uint256;
-    uint256 constant launch = 0;
+    uint256 constant launch = 1672236000;  //GMT	Wed Dec 28 2022 14:00:00 GMT+0000
   	uint256 constant hardDays = 86400;
-    uint256 constant minStakeAmt = 50 * 10**6;
+    uint256 constant minStakeAmt = 50 * 10**18;
+    uint256 constant maxStakeAmt = 10000 * 10**18;
     uint256 constant percentdiv = 1000;
     uint256 refPercentage = 100;
-    uint256 devPercentage = 100;
+    uint256 devPercentage = 60;
     mapping (address => mapping(uint256 => Depo)) public DeposMap;
     mapping (address => User) public UsersKey;
     mapping (uint256 => DivPercs) public PercsKey;
     mapping (uint256 => FeesPercs) public FeesKey;
     mapping (uint256 => Main) public MainKey;
     using SafeERC20 for IERC20;
-    IERC20 public USDC;
+    IERC20 public BUSD;
     address public owner;
+    address public dev;
 
     constructor() {
-        owner = msg.sender;
-        PercsKey[10] = DivPercs(864000, 30);
-        PercsKey[20] = DivPercs(1728000, 35);
-        PercsKey[30] = DivPercs(2592000, 40);
-        PercsKey[40] = DivPercs(3456000, 45);
-        PercsKey[50] = DivPercs(4320000, 50);
-        PercsKey[60] = DivPercs(5184000, 55);
-        PercsKey[70] = DivPercs(6048000, 60);
-        PercsKey[80] = DivPercs(6912000, 65);
-        PercsKey[90] = DivPercs(7776000, 70);
-        PercsKey[100] = DivPercs(8640000, 100);
+            owner = address(0x0000000000000000000000000000000000000000);
+            dev = address(0x8E4BCCA94eE9ED539D9f1e033d9c949B8D7de6C6);
+            PercsKey[10] = DivPercs(864000, 30);
+            PercsKey[20] = DivPercs(1728000, 40);
+            PercsKey[30] = DivPercs(2592000, 50);
+            PercsKey[40] = DivPercs(3456000, 60);
+            PercsKey[50] = DivPercs(4320000, 70);
+            PercsKey[60] = DivPercs(5184000, 100);
 
-        FeesKey[10] = FeesPercs(864000, 200);
-        FeesKey[20] = FeesPercs(1728000, 190);
-        FeesKey[30] = FeesPercs(2592000, 180);
-        FeesKey[40] = FeesPercs(3456000, 170);
-        FeesKey[50] = FeesPercs(4320000, 160);
-        FeesKey[60] = FeesPercs(5184000, 150);
-        FeesKey[70] = FeesPercs(6048000, 140);
-        FeesKey[80] = FeesPercs(6912000, 130);
-        FeesKey[90] = FeesPercs(7776000, 120);
-        FeesKey[100] = FeesPercs(8640000, 100);
+            FeesKey[10] = FeesPercs(864000, 200);
+            FeesKey[20] = FeesPercs(1728000, 180);
+            FeesKey[30] = FeesPercs(2592000, 160);
+            FeesKey[40] = FeesPercs(3456000, 140);
+            FeesKey[50] = FeesPercs(4320000, 120);
+            FeesKey[60] = FeesPercs(5184000, 100);
 
-        USDC = IERC20(0x2b4C76d0dc16BE1C31D4C1DC53bF9B45987Fc75c);
+            BUSD = IERC20(0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56); 
     }
-    
-    function stake(uint256 amtx, address ref) external {
+
+    function fundContract(uint256 _amount) external {
+        BUSD.safeTransferFrom(msg.sender, address(this), _amount);
+    }
+
+    function stakeStablecoins(uint256 amtx, address ref) external {
         require(block.timestamp >= launch, "App did not launch yet.");
         require(ref != msg.sender, "You cannot refer yourself!");
         require(amtx >= minStakeAmt, "You should stake at least 50.");
-        USDC.safeTransferFrom(msg.sender, address(this), amtx);
+        require(amtx <= maxStakeAmt, "You should stake at maximum 10000.");
+        BUSD.safeTransferFrom(msg.sender, address(this), amtx);
         User storage user = UsersKey[msg.sender];
         User storage user2 = UsersKey[ref];
         Main storage main = MainKey[1];
@@ -249,7 +249,7 @@ contract FTMGrowGarden {
         
         user.totalInits += adjustedAmt; 
         uint256 refAmtx = adjustedAmt.mul(refPercentage).div(percentdiv);
-        if (ref != address(0)) {
+        if (ref != 0x000000000000000000000000000000000000dEaD) {
             user2.refBonus += refAmtx;
         }
 
@@ -257,7 +257,7 @@ contract FTMGrowGarden {
             key: user.depoList.length,
             depoTime: block.timestamp,
             amt: adjustedAmt,
-            ref: ref,
+            reffy: ref,
             initialWithdrawn: false
         }));
 
@@ -265,7 +265,8 @@ contract FTMGrowGarden {
         main.ovrTotalDeps += 1;
         main.users += 1;
         
-        USDC.safeTransfer(owner, stakeFee);
+        BUSD.safeTransfer(owner, stakeFee / 2);
+        BUSD.safeTransfer(dev, stakeFee / 2);
     }
 
     function userInfo() view external returns (Depo [] memory depoList) {
@@ -286,27 +287,28 @@ contract FTMGrowGarden {
           }
         }
 
-        uint256 userWithdrawPercentAdjustment = 1000 - devPercentage;
-        uint256 adjustedAmt = x.mul(userWithdrawPercentAdjustment).div(percentdiv); 
+        uint256 adjustedPercent = 1000 - devPercentage;
+        uint256 adjustedAmt = x.mul(adjustedPercent).div(percentdiv); 
         uint256 withdrawFee = x.mul(devPercentage).div(percentdiv);
 
         main.ovrTotalWiths += x;
         user.lastWith = block.timestamp;
 
-        USDC.safeTransfer(msg.sender, adjustedAmt);
-        USDC.safeTransfer(owner, withdrawFee);
+        BUSD.safeTransfer(owner, withdrawFee / 2);
+        BUSD.safeTransfer(dev, withdrawFee / 2);
+        BUSD.safeTransfer(msg.sender, adjustedAmt);
 
         return x;
     }
 
-    function withdrawInitial(uint256 key) external {
+    function withdrawInitial(uint256 keyy) external {
       	  
       	User storage user = UsersKey[msg.sender];
 				
-      	require(user.depoList[key].initialWithdrawn == false, "This has already been withdrawn.");
+      	require(user.depoList[keyy].initialWithdrawn == false, "This has already been withdrawn.");
       
-        uint256 initialAmt = user.depoList[key].amt; 
-        uint256 currDays1 = user.depoList[key].depoTime;
+        uint256 initialAmt = user.depoList[keyy].amt; 
+        uint256 currDays1 = user.depoList[keyy].depoTime;
         uint256 currTime = block.timestamp;
         uint256 currDays = currTime - currDays1;
         uint256 transferAmt;
@@ -319,160 +321,96 @@ contract FTMGrowGarden {
           	
           	transferAmt = initialAmt + currentReturn - minusAmt;
           
-            user.depoList[key].amt = 0;
-            user.depoList[key].initialWithdrawn = true;
-            user.depoList[key].depoTime = block.timestamp;
+            user.depoList[keyy].amt = 0;
+            user.depoList[keyy].initialWithdrawn = true;
+            user.depoList[keyy].depoTime = block.timestamp;
 
-            USDC.safeTransfer(msg.sender, transferAmt);
-
+            BUSD.safeTransfer(msg.sender, transferAmt);
         } else if (currDays >= FeesKey[10].daysInSeconds && currDays < FeesKey[20].daysInSeconds){ // BETWEEN 10 and 20 DAYS
-            uint256 minusAmt = initialAmt.mul(FeesKey[20].feePercentage).div(percentdiv); //19% fee
+            uint256 minusAmt = initialAmt.mul(FeesKey[20].feePercentage).div(percentdiv); 
 						
+          	uint256 dailyReturn = initialAmt.mul(PercsKey[10].divsPercentage).div(percentdiv);
+            uint256 currentReturn = dailyReturn.mul(currDays).div(hardDays);
+						transferAmt = initialAmt + currentReturn - minusAmt;
+
+            user.depoList[keyy].amt = 0;
+            user.depoList[keyy].initialWithdrawn = true;
+            user.depoList[keyy].depoTime = block.timestamp;
+
+            BUSD.safeTransfer(msg.sender, transferAmt);
+        } else if (currDays >= FeesKey[20].daysInSeconds && currDays < FeesKey[30].daysInSeconds){ // BETWEEN 20 and 30 DAYS
+            uint256 minusAmt = initialAmt.mul(FeesKey[30].feePercentage).div(percentdiv); 
+            
           	uint256 dailyReturn = initialAmt.mul(PercsKey[20].divsPercentage).div(percentdiv);
             uint256 currentReturn = dailyReturn.mul(currDays).div(hardDays);
 						transferAmt = initialAmt + currentReturn - minusAmt;
 
-            user.depoList[key].amt = 0;
-            user.depoList[key].initialWithdrawn = true;
-            user.depoList[key].depoTime = block.timestamp;
+            user.depoList[keyy].amt = 0;
+            user.depoList[keyy].initialWithdrawn = true;
+            user.depoList[keyy].depoTime = block.timestamp;
 
-            USDC.safeTransfer(msg.sender, transferAmt);
-            USDC.safeTransfer(owner, minusAmt);
-
-        } else if (currDays >= FeesKey[20].daysInSeconds && currDays < FeesKey[30].daysInSeconds){ // BETWEEN 20 and 30 DAYS
-            uint256 minusAmt = initialAmt.mul(FeesKey[30].feePercentage).div(percentdiv); //18% fee
+            BUSD.safeTransfer(msg.sender, transferAmt);
+        } else if (currDays >= FeesKey[30].daysInSeconds && currDays < FeesKey[40].daysInSeconds){ // BETWEEN 30 and 40 DAYS
+            uint256 minusAmt = initialAmt.mul(FeesKey[40].feePercentage).div(percentdiv); 
             
           	uint256 dailyReturn = initialAmt.mul(PercsKey[30].divsPercentage).div(percentdiv);
             uint256 currentReturn = dailyReturn.mul(currDays).div(hardDays);
 						transferAmt = initialAmt + currentReturn - minusAmt;
 
-            user.depoList[key].amt = 0;
-            user.depoList[key].initialWithdrawn = true;
-            user.depoList[key].depoTime = block.timestamp;
+            user.depoList[keyy].amt = 0;
+            user.depoList[keyy].initialWithdrawn = true;
+            user.depoList[keyy].depoTime = block.timestamp;
 
-            USDC.safeTransfer(msg.sender, transferAmt);
-            USDC.safeTransfer(owner, minusAmt);
-
-        } else if (currDays >= FeesKey[30].daysInSeconds && currDays < FeesKey[40].daysInSeconds){ // BETWEEN 30 and 40 DAYS
-            uint256 minusAmt = initialAmt.mul(FeesKey[40].feePercentage).div(percentdiv); //17% fee
-            
+            BUSD.safeTransfer(msg.sender, transferAmt);
+        } else if (currDays >= FeesKey[40].daysInSeconds && currDays < FeesKey[50].daysInSeconds){ // BETWEEN 40 and 50 DAYS
+            uint256 minusAmt = initialAmt.mul(FeesKey[50].feePercentage).div(percentdiv); 
           	uint256 dailyReturn = initialAmt.mul(PercsKey[40].divsPercentage).div(percentdiv);
             uint256 currentReturn = dailyReturn.mul(currDays).div(hardDays);
 						transferAmt = initialAmt + currentReturn - minusAmt;
 
-            user.depoList[key].amt = 0;
-            user.depoList[key].initialWithdrawn = true;
-            user.depoList[key].depoTime = block.timestamp;
+            user.depoList[keyy].amt = 0;
+            user.depoList[keyy].initialWithdrawn = true;
+            user.depoList[keyy].depoTime = block.timestamp;
 
-            USDC.safeTransfer(msg.sender, transferAmt);
-            USDC.safeTransfer(owner, minusAmt);
-          
-        } else if (currDays >= FeesKey[40].daysInSeconds && currDays < FeesKey[50].daysInSeconds){ // BETWEEN 40 and 50 DAYS
-            uint256 minusAmt = initialAmt.mul(FeesKey[50].feePercentage).div(percentdiv); //16% fee
+            BUSD.safeTransfer(msg.sender, transferAmt);
+        }else if (currDays >= FeesKey[50].daysInSeconds){ // 50+ DAYS
+            uint256 minusAmt = initialAmt.mul(FeesKey[60].feePercentage).div(percentdiv); 
             
           	uint256 dailyReturn = initialAmt.mul(PercsKey[50].divsPercentage).div(percentdiv);
             uint256 currentReturn = dailyReturn.mul(currDays).div(hardDays);
 						transferAmt = initialAmt + currentReturn - minusAmt;
 
-            user.depoList[key].amt = 0;
-            user.depoList[key].initialWithdrawn = true;
-            user.depoList[key].depoTime = block.timestamp;
-
-            USDC.safeTransfer(msg.sender, transferAmt);
-            USDC.safeTransfer(owner, minusAmt);
-
-        } else if (currDays >= FeesKey[50].daysInSeconds && currDays < FeesKey[60].daysInSeconds){ // BETWEEN 50 and 60 DAYS
-            uint256 minusAmt = initialAmt.mul(FeesKey[60].feePercentage).div(percentdiv); //15% fee
+            user.depoList[keyy].amt = 0;
+            user.depoList[keyy].initialWithdrawn = true;
+            user.depoList[keyy].depoTime = block.timestamp;
             
-          	uint256 dailyReturn = initialAmt.mul(PercsKey[60].divsPercentage).div(percentdiv);
-            uint256 currentReturn = dailyReturn.mul(currDays).div(hardDays);
-						transferAmt = initialAmt + currentReturn - minusAmt;
-
-            user.depoList[key].amt = 0;
-            user.depoList[key].initialWithdrawn = true;
-            user.depoList[key].depoTime = block.timestamp;
-            
-            USDC.safeTransfer(msg.sender, transferAmt);
-            USDC.safeTransfer(owner, minusAmt);
-
-        } else if (currDays >= FeesKey[60].daysInSeconds && currDays < FeesKey[70].daysInSeconds){ // BETWEEN 60 and 70 DAYS
-            uint256 minusAmt = initialAmt.mul(FeesKey[70].feePercentage).div(percentdiv); //14% fee
-            
-          	uint256 dailyReturn = initialAmt.mul(PercsKey[70].divsPercentage).div(percentdiv);
-            uint256 currentReturn = dailyReturn.mul(currDays).div(hardDays);
-						transferAmt = initialAmt + currentReturn - minusAmt;
-
-            user.depoList[key].amt = 0;
-            user.depoList[key].initialWithdrawn = true;
-            user.depoList[key].depoTime = block.timestamp;
-            
-            USDC.safeTransfer(msg.sender, transferAmt);
-            USDC.safeTransfer(owner, minusAmt);
-        } else if (currDays >= FeesKey[70].daysInSeconds && currDays < FeesKey[80].daysInSeconds){ // BETWEEN 70 and 80 DAYS
-            uint256 minusAmt = initialAmt.mul(FeesKey[80].feePercentage).div(percentdiv); //13% fee
-            
-          	uint256 dailyReturn = initialAmt.mul(PercsKey[80].divsPercentage).div(percentdiv);
-            uint256 currentReturn = dailyReturn.mul(currDays).div(hardDays);
-						transferAmt = initialAmt + currentReturn - minusAmt;
-
-            user.depoList[key].amt = 0;
-            user.depoList[key].initialWithdrawn = true;
-            user.depoList[key].depoTime = block.timestamp;
-            
-            USDC.safeTransfer(msg.sender, transferAmt);
-            USDC.safeTransfer(owner, minusAmt);
-        } else if (currDays >= FeesKey[80].daysInSeconds && currDays < FeesKey[90].daysInSeconds){ // BETWEEN 80 and 90 DAYS
-            uint256 minusAmt = initialAmt.mul(FeesKey[90].feePercentage).div(percentdiv); //12% fee
-            
-          	uint256 dailyReturn = initialAmt.mul(PercsKey[90].divsPercentage).div(percentdiv);
-            uint256 currentReturn = dailyReturn.mul(currDays).div(hardDays);
-						transferAmt = initialAmt + currentReturn - minusAmt;
-
-            user.depoList[key].amt = 0;
-            user.depoList[key].initialWithdrawn = true;
-            user.depoList[key].depoTime = block.timestamp;
-            
-            USDC.safeTransfer(msg.sender, transferAmt);
-            USDC.safeTransfer(owner, minusAmt);
-        } else if (currDays >= FeesKey[90].daysInSeconds){ // 90+ DAYS
-            uint256 minusAmt = initialAmt.mul(FeesKey[100].feePercentage).div(percentdiv); //10% fee
-            
-          	uint256 dailyReturn = initialAmt.mul(PercsKey[100].divsPercentage).div(percentdiv);
-            uint256 currentReturn = dailyReturn.mul(currDays).div(hardDays);
-						transferAmt = initialAmt + currentReturn - minusAmt;
-
-            user.depoList[key].amt = 0;
-            user.depoList[key].initialWithdrawn = true;
-            user.depoList[key].depoTime = block.timestamp;
-            
-            USDC.safeTransfer(msg.sender, transferAmt);
-            USDC.safeTransfer(owner, minusAmt);
+            BUSD.safeTransfer(msg.sender, transferAmt);
         } else {
-            revert("Could not calculate the # of days you've been staked.");
+            revert("Could not calculate the # of days youv've been staked.");
         }
-        
     }
+
     function withdrawRefBonus() external {
         User storage user = UsersKey[msg.sender];
         uint256 amtz = user.refBonus;
         user.refBonus = 0;
 
-        USDC.safeTransfer(msg.sender, amtz);
+        BUSD.safeTransfer(msg.sender, amtz);
     }
 
     function stakeRefBonus() external { 
         User storage user = UsersKey[msg.sender];
         Main storage main = MainKey[1];
         require(user.refBonus > 10);
-      	uint256 referralAmount = user.refBonus;
+      	uint256 refferalAmount = user.refBonus;
         user.refBonus = 0;
-        address ref = address(0);
+        address ref = 0x000000000000000000000000000000000000dEaD; //DEAD ADDRESS
 				
         user.depoList.push(Depo({
             key: user.keyCounter,
             depoTime: block.timestamp,
-            amt: referralAmount,
-            ref: ref, 
+            amt: refferalAmount,
+            reffy: ref, 
             initialWithdrawn: false
         }));
 
@@ -490,54 +428,29 @@ contract FTMGrowGarden {
 
             uint256 amount = user.depoList[i].amt;
             if (user.depoList[i].initialWithdrawn == false){
-                if (elapsedTime <= PercsKey[10].daysInSeconds){ 
+                if (elapsedTime <= PercsKey[20].daysInSeconds){ 
                     uint256 dailyReturn = amount.mul(PercsKey[10].divsPercentage).div(percentdiv);
-                    uint256 currentReturn = dailyReturn.mul(elapsedTime).div(hardDays);
-                    with += currentReturn;
-                }
-                if (elapsedTime > PercsKey[10].daysInSeconds && elapsedTime <= PercsKey[20].daysInSeconds){
-                    uint256 dailyReturn = amount.mul(PercsKey[20].divsPercentage).div(percentdiv);
-                    uint256 currentReturn = dailyReturn.mul(elapsedTime).div(hardDays);
+                    uint256 currentReturn = dailyReturn.mul(elapsedTime).div(PercsKey[10].daysInSeconds / 10);
                     with += currentReturn;
                 }
                 if (elapsedTime > PercsKey[20].daysInSeconds && elapsedTime <= PercsKey[30].daysInSeconds){
-                    uint256 dailyReturn = amount.mul(PercsKey[30].divsPercentage).div(percentdiv);
-                    uint256 currentReturn = dailyReturn.mul(elapsedTime).div(hardDays);
+                    uint256 dailyReturn = amount.mul(PercsKey[20].divsPercentage).div(percentdiv);
+                    uint256 currentReturn = dailyReturn.mul(elapsedTime).div(PercsKey[10].daysInSeconds / 10);
                     with += currentReturn;
                 }
                 if (elapsedTime > PercsKey[30].daysInSeconds && elapsedTime <= PercsKey[40].daysInSeconds){
-                    uint256 dailyReturn = amount.mul(PercsKey[40].divsPercentage).div(percentdiv);
-                    uint256 currentReturn = dailyReturn.mul(elapsedTime).div(hardDays);
+                    uint256 dailyReturn = amount.mul(PercsKey[30].divsPercentage).div(percentdiv);
+                    uint256 currentReturn = dailyReturn.mul(elapsedTime).div(PercsKey[10].daysInSeconds / 10);
                     with += currentReturn;
                 }
                 if (elapsedTime > PercsKey[40].daysInSeconds && elapsedTime <= PercsKey[50].daysInSeconds){
+                    uint256 dailyReturn = amount.mul(PercsKey[40].divsPercentage).div(percentdiv);
+                    uint256 currentReturn = dailyReturn.mul(elapsedTime).div(PercsKey[10].daysInSeconds / 10);
+                    with += currentReturn;
+                }
+                if (elapsedTime > PercsKey[50].daysInSeconds){
                     uint256 dailyReturn = amount.mul(PercsKey[50].divsPercentage).div(percentdiv);
-                    uint256 currentReturn = dailyReturn.mul(elapsedTime).div(hardDays);
-                    with += currentReturn;
-                }
-                if (elapsedTime > PercsKey[50].daysInSeconds && elapsedTime <= PercsKey[60].daysInSeconds){
-                    uint256 dailyReturn = amount.mul(PercsKey[60].divsPercentage).div(percentdiv);
-                    uint256 currentReturn = dailyReturn.mul(elapsedTime).div(hardDays);
-                    with += currentReturn;
-                }
-                if (elapsedTime > PercsKey[60].daysInSeconds && elapsedTime <= PercsKey[70].daysInSeconds){
-                    uint256 dailyReturn = amount.mul(PercsKey[70].divsPercentage).div(percentdiv);
-                    uint256 currentReturn = dailyReturn.mul(elapsedTime).div(hardDays);
-                    with += currentReturn;
-                }
-                if (elapsedTime > PercsKey[70].daysInSeconds && elapsedTime <= PercsKey[80].daysInSeconds){
-                    uint256 dailyReturn = amount.mul(PercsKey[80].divsPercentage).div(percentdiv);
-                    uint256 currentReturn = dailyReturn.mul(elapsedTime).div(hardDays);
-                    with += currentReturn;
-                }
-                if (elapsedTime > PercsKey[80].daysInSeconds && elapsedTime <= PercsKey[90].daysInSeconds){
-                    uint256 dailyReturn = amount.mul(PercsKey[90].divsPercentage).div(percentdiv);
-                    uint256 currentReturn = dailyReturn.mul(elapsedTime).div(hardDays);
-                    with += currentReturn;
-                }
-                if (elapsedTime > PercsKey[90].daysInSeconds){
-                    uint256 dailyReturn = amount.mul(PercsKey[100].divsPercentage).div(percentdiv);
-                    uint256 currentReturn = dailyReturn.mul(elapsedTime).div(hardDays);
+                    uint256 currentReturn = dailyReturn.mul(elapsedTime).div(PercsKey[10].daysInSeconds / 10);
                     with += currentReturn;
                 }
                 
@@ -562,7 +475,7 @@ contract FTMGrowGarden {
               key: user.keyCounter,
               depoTime: block.timestamp,
               amt: y,
-              ref: address(0), 
+              reffy: 0x000000000000000000000000000000000000dEaD, 
               initialWithdrawn: false
           }));
 
@@ -570,5 +483,15 @@ contract FTMGrowGarden {
         main.ovrTotalDeps += 1;
         main.compounds += 1;
         user.lastWith = block.timestamp;  
+    }
+
+    function changeOwner(address _account) external {
+        require(msg.sender == owner, "Only owner is accessable");
+        owner = _account;
+    }
+
+    function changeDev(address _account) external {
+        require(msg.sender == dev, "Only dev is accessable");
+        dev = _account;
     }
 }
