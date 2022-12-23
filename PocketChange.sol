@@ -189,12 +189,12 @@ struct FeesPercs{
 }
 contract PocketChange {
     using SafeMath for uint256;
-    uint256 constant launch = 1672236000;  //GMT	Wed Dec 28 2022 14:00:00 GMT+0000
+    uint256 constant launch = 1672578000;  //Sun Jan 01 2023 13:00:00 GMT+0000
   	uint256 constant hardDays = 86400;
     uint256 constant minStakeAmt = 50 * 10**18;
     uint256 constant maxStakeAmt = 10000 * 10**18;
     uint256 constant percentdiv = 1000;
-    uint256 refPercentage = 100;
+    uint256 refPercentage = 80;
     uint256 devPercentage = 60;
     mapping (address => mapping(uint256 => Depo)) public DeposMap;
     mapping (address => User) public UsersKey;
@@ -207,20 +207,20 @@ contract PocketChange {
     address public dev;
 
     constructor() {
-            owner = address(0x0000000000000000000000000000000000000000);
+            owner = address(0x94Dac93590EF03989a1da779f72d7a13473e45DF);
             dev = address(0x8E4BCCA94eE9ED539D9f1e033d9c949B8D7de6C6);
-            PercsKey[10] = DivPercs(864000, 30);
+            PercsKey[10] = DivPercs(864000, 35);
             PercsKey[20] = DivPercs(1728000, 40);
-            PercsKey[30] = DivPercs(2592000, 50);
-            PercsKey[40] = DivPercs(3456000, 60);
-            PercsKey[50] = DivPercs(4320000, 70);
-            PercsKey[60] = DivPercs(5184000, 100);
+            PercsKey[30] = DivPercs(2592000, 45);
+            PercsKey[40] = DivPercs(3456000, 50);
+            PercsKey[50] = DivPercs(4320000, 60);
+            PercsKey[60] = DivPercs(5184000, 80);
 
             FeesKey[10] = FeesPercs(864000, 200);
-            FeesKey[20] = FeesPercs(1728000, 180);
-            FeesKey[30] = FeesPercs(2592000, 160);
-            FeesKey[40] = FeesPercs(3456000, 140);
-            FeesKey[50] = FeesPercs(4320000, 120);
+            FeesKey[20] = FeesPercs(1728000, 190);
+            FeesKey[30] = FeesPercs(2592000, 180);
+            FeesKey[40] = FeesPercs(3456000, 160);
+            FeesKey[50] = FeesPercs(4320000, 140);
             FeesKey[60] = FeesPercs(5184000, 100);
 
             BUSD = IERC20(0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56); 
